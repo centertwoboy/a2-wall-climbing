@@ -7,7 +7,6 @@ dist/
 build/
 
 # Results (large generated files)
-results/csv/
 results/videos/
 results/figures/
 
