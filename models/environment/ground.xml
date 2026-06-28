@@ -1,0 +1,13 @@
+<mujoco model="ground">
+  <worldbody>
+    <!-- Horizontal ground plane -->
+    <body name="ground">
+      <geom name="ground_plane"
+            type="plane"
+            pos="0 0 0"
+            size="10.0 10.0 0.05"
+            friction="0.8 0.02 0.001"
+            rgba="0.3 0.35 0.3 1"/>
+    </body>
+  </worldbody>
+</mujoco>

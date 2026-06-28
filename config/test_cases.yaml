@@ -1,0 +1,125 @@
+# Test Cases Configuration
+
+test_cases:
+  T1:
+    name: "水平站立"
+    description: "验证质量、重力补偿和关节方向"
+    type: "ground_stand"
+    duration: 5.0
+
+  T2:
+    name: "竖直壁面四足吸附静止"
+    description: "验证吸附模型和静态力矩"
+    type: "wall_static"
+    adhesion_force: 1000.0
+    duration: 10.0
+
+  T3:
+    name: "抬起FL腿"
+    type: "three_leg_support"
+    lifted_leg: "FL"
+    duration: 8.0
+
+  T4:
+    name: "抬起FR腿"
+    type: "three_leg_support"
+    lifted_leg: "FR"
+    duration: 8.0
+
+  T5:
+    name: "抬起RL腿"
+    type: "three_leg_support"
+    lifted_leg: "RL"
+    duration: 8.0
+
+  T6:
+    name: "抬起RR腿"
+    type: "three_leg_support"
+    lifted_leg: "RR"
+    duration: 8.0
+
+  T7:
+    name: "单腿脱附"
+    type: "single_step"
+    leg: "FL"
+    phase: "release"
+    duration: 5.0
+
+  T8:
+    name: "单腿摆动"
+    type: "single_step"
+    leg: "FL"
+    phase: "swing"
+    duration: 5.0
+
+  T9:
+    name: "重新接触吸附"
+    type: "single_step"
+    leg: "FL"
+    phase: "attach"
+    duration: 5.0
+
+  T10:
+    name: "完整四步爬行"
+    type: "continuous_climb"
+    num_steps: 4
+    duration: 35.0
+
+  T11:
+    name: "连续爬行"
+    type: "continuous_climb"
+    num_steps: 20
+    duration: 180.0
+
+  T12:
+    name: "180Nm限幅爬行"
+    type: "continuous_climb"
+    torque_limit: 180.0
+    num_steps: 8
+    duration: 70.0
+
+  T13:
+    name: "A2加等效负载爬行"
+    type: "continuous_climb"
+    payload_mass: 15.0
+    num_steps: 8
+    duration: 70.0
+
+  T14:
+    name: "A2加机械臂收拢姿态"
+    type: "continuous_climb"
+    model: "a2_arm"
+    arm_pose: "folded"
+    num_steps: 4
+    duration: 35.0
+
+# Parameter sweep configurations
+parameter_sweeps:
+  adhesion:
+    values: [500, 750, 1000, 1250, 1500, 2000]
+    unit: "N/foot"
+
+  friction:
+    values: [0.3, 0.4, 0.5, 0.6]
+
+  speed:
+    values: [0.01, 0.03, 0.05, 0.10]
+    unit: "m/s"
+
+  step_length:
+    values: [0.03, 0.05, 0.08, 0.10]
+    unit: "m"
+
+  payload:
+    values: [0, 5, 10, 15, 20]
+    unit: "kg"
+
+# Payload test matrix
+payload_cases:
+  P0: {mass: 0, com_offset: [0, 0, 0]}
+  P1: {mass: 5, com_offset: [0, 0, 0]}
+  P2: {mass: 10, com_offset: [0, 0, 0]}
+  P3: {mass: 15, com_offset: [0, 0, 0]}
+  P4: {mass: 15, com_offset: [0.05, 0, 0]}
+  P5: {mass: 15, com_offset: [0, 0.05, 0]}
+  P6: {mass: 20, com_offset: [0.05, 0.05, 0]}

@@ -1,0 +1,19 @@
+<mujoco model="inclined_wall">
+  <worldbody>
+    <!-- Inclined wall: rotate about x-axis by specified angle -->
+    <!-- Default: 30 degrees; modify pos/quat for 60 degrees -->
+    <body name="wall_inclined" pos="0 0.5 1.5"
+          quat="0.9659 0.2588 0 0">
+      <geom name="inclined_wall"
+            type="box"
+            pos="0 0 0"
+            size="2.0 0.025 1.5"
+            friction="0.5 0.02 0.001"
+            solref="0.01 1"
+            solimp="0.95 0.99 0.001"
+            rgba="0.45 0.45 0.50 1"
+            contype="1"
+            conaffinity="1"/>
+    </body>
+  </worldbody>
+</mujoco>

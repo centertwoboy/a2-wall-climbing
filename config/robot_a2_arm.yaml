@@ -1,0 +1,22 @@
+# A2 + Arm Combined Robot Configuration
+robot:
+  name: "a2_arm"
+  model_path: "models/robots/a2_arm.xml"
+
+  # Inherits all A2 joint config
+  # Additional arm joints
+  arm:
+    n_joints: 6  # typical 6-DOF arm
+    joints:
+      - "arm_joint1"
+      - "arm_joint2"
+      - "arm_joint3"
+      - "arm_joint4"
+      - "arm_joint5"
+      - "arm_joint6"
+
+  # Arm mounting position relative to body frame
+  arm_mount_pos: [0.15, 0.0, 0.12]
+
+  # Tool payload (kg)
+  tool_mass: 3.0

@@ -1,0 +1,59 @@
+# Controller Configuration
+
+simulation:
+  timestep: 0.001          # 1000 Hz simulation
+  control_decimation: 3    # controller runs every N steps (333 Hz)
+  duration: 10.0           # default simulation duration (s)
+
+gait:
+  type: "crawl"            # crawl gait: FL -> RR -> FR -> RL
+  step_length: 0.05        # meters per step
+  step_height: 0.02        # foot clearance from wall (m)
+  swing_time: 1.5          # swing phase duration (s)
+  support_time: 0.5        # extra support stabilization (s)
+  cycle_time: 8.0          # full 4-leg cycle (s)
+
+adhesion:
+  max_force: 1000.0        # max adhesion force per foot (N)
+  gain: 1000.0             # actuator gain
+  switch_time: 0.3         # smooth on/off transition (s)
+  force_range: [0.0, 1.0]  # normalized control range
+
+# PD gains tuned for A2 real model (~26.5 kg)
+gains:
+  # Hip: abduction, lower gain (X-axis rotation)
+  kp_hip: 60.0
+  kd_hip: 1.5
+  # Thigh: pitch, moderate gain
+  kp_thigh: 100.0
+  kd_thigh: 2.5
+  # Calf: pitch, higher gain (smaller inertia)
+  kp_calf: 80.0
+  kd_calf: 2.0
+
+torque:
+  max_rate: 500.0          # max torque rate of change (N.m/s)
+  demand_limit: 300.0      # for measuring required torque
+  motor_limits:            # actual motor limits from A2 specs
+    hip: 120.0
+    thigh: 120.0
+    calf: 180.0
+
+  warning:
+    level1: 126.0
+    level2: 144.0
+
+contact:
+  friction_slide: 0.5
+  friction_torsion: 0.02
+  friction_roll: 0.001
+  solref: [0.01, 1.0]
+  solimp: [0.95, 0.99, 0.001]
+  min_normal_force: 20.0
+  max_contact_velocity: 0.02
+  confirm_time: 0.15
+
+environment:
+  gravity: [0.0, 0.0, -9.81]
+  wall_normal: [0.0, 1.0, 0.0]    # wall in x-z plane
+  climb_direction: [0.0, 0.0, 1.0] # climb upward along +z

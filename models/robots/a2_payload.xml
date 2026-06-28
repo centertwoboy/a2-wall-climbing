@@ -1,0 +1,17 @@
+<mujoco model="a2_payload">
+  <include file="a2.xml"/>
+
+  <!-- Equivalent payload: mass block attached to base_link body -->
+  <worldbody>
+    <body name="equivalent_payload" pos="0.15 0 0.12">
+      <inertial pos="0 0 0" mass="15.0"
+                diaginertia="0.25 0.25 0.15"/>
+      <geom name="payload_geom" type="box"
+            pos="0 0 0"
+            size="0.15 0.10 0.08"
+            mass="15.0"
+            rgba="0.8 0.6 0.2 1"/>
+      <joint name="payload_fixed" type="fixed"/>
+    </body>
+  </worldbody>
+</mujoco>

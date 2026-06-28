@@ -1,0 +1,18 @@
+<mujoco model="container_wall">
+  <worldbody>
+    <!-- Vertical container wall in x-z plane, normal along +y -->
+    <!-- Wall dimensions: 4m wide (x) x 3m tall (z) x 0.05m thick (y) -->
+    <body name="wall" pos="0 0 1.5">
+      <geom name="container_wall"
+            type="box"
+            pos="0 0 0"
+            size="2.0 0.025 1.5"
+            friction="0.5 0.02 0.001"
+            solref="0.01 1"
+            solimp="0.95 0.99 0.001"
+            rgba="0.45 0.45 0.50 1"
+            contype="1"
+            conaffinity="1"/>
+    </body>
+  </worldbody>
+</mujoco>

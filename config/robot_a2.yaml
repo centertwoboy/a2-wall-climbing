@@ -1,0 +1,82 @@
+# A2 Robot Configuration (based on actual A2 URDF/MJCF)
+
+robot:
+  name: "a2"
+  model_path: "models/robots/a2.xml"
+  n_joints: 12
+
+  # Floating base (6-DOF)
+  floating_base: true
+  n_q: 19   # 7 (base) + 12 (joints)
+  n_v: 18   # 6 (base) + 12 (joints)
+
+  # Body (link) masses from URDF [kg]
+  masses:
+    base_link: 19.651
+    hip: 1.62
+    thigh: 3.079   # FL/RL = 3.079, FR/RR = 3.077
+    calf: 0.407     # MJCF; URDF says 0.361+0.046=0.407 with foot
+    foot: 0.046
+  total_mass: 26.5   # ~19.651 + 4*(1.62+3.079+0.407+0.046+0.3_magnet)
+
+  # Joint name convention
+  legs:
+    FL:
+      hip: "FL_hip_joint"
+      thigh: "FL_thigh_joint"
+      calf: "FL_calf_joint"
+    FR:
+      hip: "FR_hip_joint"
+      thigh: "FR_thigh_joint"
+      calf: "FR_calf_joint"
+    RL:
+      hip: "RL_hip_joint"
+      thigh: "RL_thigh_joint"
+      calf: "RL_calf_joint"
+    RR:
+      hip: "RR_hip_joint"
+      thigh: "RR_thigh_joint"
+      calf: "RR_calf_joint"
+
+  # Joint limits from URDF
+  joint_limits:
+    hip: [-1.01, 1.01]         # abduction/adduction (X-axis)
+    thigh_front: [-2.34, 3.15]  # FL, FR
+    thigh_rear: [-1.56, 3.94]   # RL, RR
+    calf: [-2.77, -0.54]        # all legs (always negative)
+
+  # Joint axes
+  joint_axes:
+    hip: [1, 0, 0]     # X-axis
+    thigh: [0, 1, 0]   # Y-axis
+    calf: [0, 1, 0]    # Y-axis
+
+  # Motor torque limits from URDF [N·m]
+  torque:
+    hip_limit: 120.0
+    thigh_limit: 120.0
+    calf_limit: 180.0
+    demand_limit: 300.0           # for measuring demand (overrides real limits)
+    motor_limit: 180.0            # peak reference value from spec
+
+  # Kinematic offsets (from base_link to joints)
+  offsets:
+    hip_x: 0.25944      # half body length
+    hip_y: 0.075113      # half body width
+    thigh: [0, 0.12779, 0]       # hip to thigh
+    calf: [0, 0, -0.275]         # thigh to calf
+    foot: [0, 0, -0.275]         # calf to foot
+
+  # Foot magnet bodies
+  feet:
+    FL: "FL_magnet_body"
+    FR: "FR_magnet_body"
+    RL: "RL_magnet_body"
+    RR: "RR_magnet_body"
+
+  # Foot sites (for IK targets)
+  foot_sites:
+    FL: "FL_magnet_site"
+    FR: "FR_magnet_site"
+    RL: "RL_magnet_site"
+    RR: "RR_magnet_site"

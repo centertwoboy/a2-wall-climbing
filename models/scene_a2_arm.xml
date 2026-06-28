@@ -1,0 +1,4 @@
+<mujoco model="scene_a2_arm">
+  <include file="environment/container_wall.xml"/>
+  <include file="robots/a2_arm.xml"/>
+</mujoco>

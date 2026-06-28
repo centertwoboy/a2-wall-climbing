@@ -1,0 +1,53 @@
+<mujoco model="a2_arm">
+  <include file="a2.xml"/>
+
+  <!-- 6-DOF robotic arm mounted on base_link body -->
+  <worldbody>
+    <body name="arm_base" pos="0.15 0 0.12">
+      <joint name="arm_base_fixed" type="fixed"/>
+
+      <body name="arm_link1" pos="0 0 0.05">
+        <joint name="arm_joint1" type="hinge" axis="0 0 1"
+               range="-3.14 3.14" damping="2.0"/>
+        <geom name="arm_link1_geom" type="cylinder"
+              size="0.04" fromto="0 0 0 0 0 0.08"
+              rgba="0.6 0.5 0.3 1"/>
+
+        <body name="arm_link2" pos="0 0 0.08">
+          <joint name="arm_joint2" type="hinge" axis="0 1 0"
+                 range="-2.0 2.0" damping="2.0"/>
+          <geom name="arm_link2_geom" type="capsule"
+                size="0.035" fromto="0 0 0 0.15 0 0"
+                rgba="0.6 0.5 0.3 1"/>
+
+          <body name="arm_link3" pos="0.15 0 0">
+            <joint name="arm_joint3" type="hinge" axis="0 1 0"
+                   range="-2.5 2.5" damping="1.5"/>
+            <geom name="arm_link3_geom" type="capsule"
+                  size="0.03" fromto="0 0 0 0.12 0 0"
+                  rgba="0.6 0.5 0.3 1"/>
+
+            <body name="arm_link4" pos="0.12 0 0">
+              <joint name="arm_joint4" type="hinge" axis="1 0 0"
+                     range="-3.14 3.14" damping="1.0"/>
+              <geom name="arm_link4_geom" type="capsule"
+                    size="0.025" fromto="0 0 0 0.05 0 0"
+                    rgba="0.6 0.5 0.3 1"/>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <motor name="arm_joint1_motor" joint="arm_joint1" gear="1"
+           ctrllimited="true" ctrlrange="-50 50"/>
+    <motor name="arm_joint2_motor" joint="arm_joint2" gear="1"
+           ctrllimited="true" ctrlrange="-80 80"/>
+    <motor name="arm_joint3_motor" joint="arm_joint3" gear="1"
+           ctrllimited="true" ctrlrange="-60 60"/>
+    <motor name="arm_joint4_motor" joint="arm_joint4" gear="1"
+           ctrllimited="true" ctrlrange="-30 30"/>
+  </actuator>
+</mujoco>

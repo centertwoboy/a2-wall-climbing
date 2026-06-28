@@ -1,0 +1,28 @@
+<mujoco model="scene_a2">
+  <include file="environment/container_wall.xml"/>
+  <include file="robots/a2.xml"/>
+
+  <statistic center="0 0.5 1.5" extent="1.5"/>
+
+  <visual>
+    <headlight diffuse="0.7 0.7 0.7" ambient="0.3 0.3 0.3"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="flat" rgb1="0.15 0.15 0.2" rgb2="0.15 0.15 0.2"
+             width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge"
+             rgb1="0.55 0.55 0.6" rgb2="0.45 0.45 0.5"
+             markrgb="0.9 0.9 0.9" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane"
+              texuniform="true" texrepeat="10 10" reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <light pos="2 2 3" dir="-1 -1 -2" directional="true"
+           diffuse="0.8 0.8 0.8" specular="0.2 0.2 0.2"/>
+    <geom name="ground" type="plane" size="5 5 0.05"
+          friction="0.8 0.02 0.001" material="groundplane"
+          solref="0.02 1" solimp="0.9 0.95 0.001"/>
+  </worldbody>
+</mujoco>

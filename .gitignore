@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+
+# Results (large generated files)
+results/csv/
+results/videos/
+results/figures/
+
+# IDE
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Conda/venv
+.venv/
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
