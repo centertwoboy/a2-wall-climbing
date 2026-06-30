@@ -1,5 +1,5 @@
 """
-T2: Static four-foot adhesion on vertical wall.
+T2: Static four-foot wall adhesion on vertical wall.
 Two orientations:
   A - body +Y points up along wall (side-standing, gravity in body -Y)
   B - body +X points up along wall (head-up, gravity in body -X)
@@ -16,28 +16,24 @@ from simulation.simulation_base import SimulationBase
 
 
 class TestWallStatic(SimulationBase):
-    """Four-foot wall adhesion — static equilibrium."""
+    """Four-foot wall adhesion — static equilibrium (xfrc + adhesion)."""
 
     ORIENTATIONS = {
         "A": {  # side-standing: body +Y -> world +Z (up)
-            "quat": [0.707107, 0.707107, 0.0, 0.0],           # +90° about X
+            "quat": [0.0, 0.0, 0.707107, 0.707107],       # 180 about YZ: body+Y=Z, body+Z=Y
             "gravity_body": "body -Y (lateral, right side)",
-            "base_pos": [0.0, None, 1.5],  # y computed below
-            "wall_normal_force": 0.0,       # body-behind-wall constraint suffices
+            "base_pos": [0.0, None, 1.5],
+            "wall_normal_force": 800.0,
             "standing_q": [0.0, 0.7, -1.4],
-            "foot_site_offset": 0.0,        # foot site → wall surface offset [m]
+            "foot_site_offset": 0.0,
         },
         "B": {  # head-up: body +X -> world +Z (up)
-            "quat": [0.5, -0.5, -0.5, -0.5],                   # X→Z, Z→Y, Y→X
-            "gravity_body": "body -X (sagittal, backward)",
+            "quat": [0.5, -0.5, -0.5, -0.5],                   # X->Z, Z->Y, Y->X
+            "gravity_body": "body -X",
             "base_pos": [0.0, None, 1.5],
-            "wall_normal_force": 800.0,     # xfrc per foot toward wall [N]
-            "trunk_wall_force": 800.0,      # xfrc on trunk toward wall [N]
+            "wall_normal_force": 800.0,
             "standing_q": [0.0, 1.0, -1.0],
-            # Magnet face penetrates 12mm into wall for contact pressure.
-            # Magnet half-size=8mm in Z(=world Y). site to center = -8mm in Z.
-            # Face at y=0.013: center at 0.021, site at 0.013.
-            "foot_site_offset": -0.012,     # site_y = 0.025 + offset = 0.013
+            "foot_site_offset": -0.012,
         },
     }
 
@@ -49,7 +45,6 @@ class TestWallStatic(SimulationBase):
         cfg = self.ORIENTATIONS[orientation]
         self._orientation = orientation
         self._wall_force = cfg["wall_normal_force"]
-        self._trunk_wall_force = cfg.get("trunk_wall_force", 0.0)
 
         # Run control at full sim rate (1000 Hz) for stability
         self.control_decimation = 1
@@ -67,7 +62,6 @@ class TestWallStatic(SimulationBase):
         mujoco.mj_forward(self.model, self.data)
         base_y0 = self.data.qpos[1]
         foot_y_min = min(self.robot.get_foot_pos(leg)[1] for leg in self.robot.LEGS)
-        # Target foot site y = wall_surface + foot_site_offset
         target_y = 0.025 + cfg.get("foot_site_offset", 0.0)
         base_y_new = base_y0 - (foot_y_min - target_y)
         self.data.qpos[0:3] = [cfg["base_pos"][0], base_y_new, cfg["base_pos"][2]]
@@ -77,51 +71,40 @@ class TestWallStatic(SimulationBase):
         # Fixed target pose
         self._q_des = self.robot.get_joint_positions().copy()
 
-        # Pre-load torque and adhesion
-        tau_ff_init = self.robot.get_bias_torques()
-        for leg in self.robot.LEGS:
-            self.robot.set_adhesion(leg, 0.3)
-        self.robot.set_joint_torques(np.clip(tau_ff_init, -self._joint_limits, self._joint_limits))
-
         # High-gain PD
         self._kp = np.tile([200, 300, 250], 4)
         self._kd = np.tile([5, 8, 6], 4)
 
-        # T2B only: disable foot collision spheres that shadow magnet geoms,
+        # Disable foot collision spheres that shadow magnet geoms,
         # and increase magnet friction for better wall grip.
-        if orientation == "B":
-            for i in range(self.model.ngeom):
-                body_name = self.model.body(self.model.geom_bodyid[i]).name or ""
-                if "calf" in body_name:
-                    gtype = self.model.geom_type[i]
-                    gpos = self.model.geom_pos[i]
-                    if gtype == mujoco.mjtGeom.mjGEOM_SPHERE and abs(gpos[2] + 0.275) < 0.001:
-                        self.model.geom_contype[i] = 0
-                        self.model.geom_conaffinity[i] = 0
-                if "magnet_geom" in (self.model.geom(i).name or ""):
-                    self.model.geom_friction[i] = [1.0, 0.1, 0.001]
+        for i in range(self.model.ngeom):
+            body_name = self.model.body(self.model.geom_bodyid[i]).name or ""
+            if "calf" in body_name:
+                gtype = self.model.geom_type[i]
+                gpos = self.model.geom_pos[i]
+                if gtype == mujoco.mjtGeom.mjGEOM_SPHERE and abs(gpos[2] + 0.275) < 0.001:
+                    self.model.geom_contype[i] = 0
+                    self.model.geom_conaffinity[i] = 0
+            if "magnet_geom" in (self.model.geom(i).name or ""):
+                self.model.geom_friction[i] = [0.5, 0.02, 0.001]
 
         self._trunk_body_id = 2  # body 2 = base_link (1 = wall)
         self._foot_xfrc_ids = {
             leg: self.robot.get_foot_body_id(leg) for leg in self.robot.LEGS
         }
 
-        extra = f", trunk_force={self._trunk_wall_force}N" if self._trunk_wall_force else ""
         print(f"[T2{orientation}] gravity in {cfg['gravity_body']}"
-              f", wall_force={self._wall_force}N/foot{extra}")
+              f", wall_force={self._wall_force}N/foot")
 
     def control_update(self):
         q = self.robot.get_joint_positions()
         dq = self.robot.get_joint_velocities()
 
-        # Push feet + trunk toward wall so magnet faces are compressed,
-        # creating real contact normal → friction to resist gravity.
+        # xfrc pushes feet toward wall -> contact -> friction resists gravity
         if self._wall_force > 0:
             for leg in self.robot.LEGS:
                 bid = self._foot_xfrc_ids[leg]
                 self.data.xfrc_applied[bid, 1] = -self._wall_force
-        if self._trunk_wall_force > 0:
-            self.data.xfrc_applied[self._trunk_body_id, 1] = -self._trunk_wall_force
 
         # PD + live gravity compensation
         tau_ff = self.robot.get_bias_torques()
